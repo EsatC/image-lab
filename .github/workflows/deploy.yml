@@ -8,7 +8,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ${{ github.repository }}
+  # Hardcode as lowercase because Docker tags don't support uppercase (EsatC)
+  IMAGE_PREFIX: esatc/image-lab
 
 jobs:
   # ── Lint & Test ──────────────────────────────────────
