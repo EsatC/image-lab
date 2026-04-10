@@ -1,0 +1,114 @@
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.dashboard-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/* Drop Zone */
+.drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+  margin-bottom: 32px;
+  cursor: pointer;
+  transition: all var(--transition);
+  background: var(--bg-card);
+}
+.drop-zone:hover,
+.drop-zone--active {
+  border-color: var(--accent);
+  background: rgba(108, 92, 231, 0.05);
+  box-shadow: var(--shadow-glow);
+}
+.drop-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+.drop-highlight {
+  color: var(--accent-light);
+  font-weight: 600;
+}
+
+/* Image Grid */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.image-card {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.image-thumb {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.image-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.image-card:hover .image-thumb img {
+  transform: scale(1.05);
+}
+
+.image-info {
+  padding: 14px 16px 8px;
+}
+.image-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.image-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.image-actions {
+  padding: 8px 16px 14px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+.empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}

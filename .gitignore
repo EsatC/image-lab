@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+*.db
+
+# Environment
+.env
+.env.local
+
+# Uploads
+backend/uploads/
+backend/instance/
+
+# IDE
+.vscode/
+.idea/
