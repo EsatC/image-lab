@@ -4,7 +4,33 @@ Provides image manipulation functions using Pillow and OpenCV.
 """
 import cv2
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ExifTags
+
+def extract_exif(img: Image.Image) -> dict:
+    """Extract EXIF data and parse to a JSON-serializable dictionary."""
+    exif_data = img.getexif()
+    if not exif_data:
+        return {}
+        
+    metadata = {}
+    for tag_id, value in exif_data.items():
+        tag = ExifTags.TAGS.get(tag_id, tag_id)
+        # Avoid bytes/unserializable types
+        if isinstance(value, bytes):
+            try:
+                value = value.decode("utf-8", errors="replace")
+            except Exception:
+                value = str(value)
+        elif not isinstance(value, (int, float, str)):
+            value = str(value)
+        metadata[str(tag)] = value
+        
+    return metadata
+
+def strip_metadata(img: Image.Image) -> Image.Image:
+    """Strip all EXIF/ICC profiles by copying pixel data into a new Image."""
+    data = np.array(img)
+    return Image.fromarray(data)
 
 
 def histogram_equalize(img: Image.Image) -> Image.Image:
@@ -77,6 +103,55 @@ def apply_invert(img: Image.Image) -> Image.Image:
     return Image.fromarray(inverted)
 
 
+def apply_resize(img: Image.Image, width: int = None, height: int = None) -> Image.Image:
+    """Resize image to given dimensions. Maintains aspect ratio if only one dimension given."""
+    orig_w, orig_h = img.size
+
+    if width and height:
+        new_size = (int(width), int(height))
+    elif width:
+        ratio = int(width) / orig_w
+        new_size = (int(width), int(orig_h * ratio))
+    elif height:
+        ratio = int(height) / orig_h
+        new_size = (int(orig_w * ratio), int(height))
+    else:
+        return img
+
+    return img.resize(new_size, Image.LANCZOS)
+
+
+def apply_crop(img: Image.Image, x: int = 0, y: int = 0, width: int = None, height: int = None) -> Image.Image:
+    """Crop image to the specified rectangle (x, y, width, height)."""
+    orig_w, orig_h = img.size
+    x, y = int(x), int(y)
+    w = int(width) if width else orig_w - x
+    h = int(height) if height else orig_h - y
+
+    # Clamp to image boundaries
+    x = max(0, min(x, orig_w - 1))
+    y = max(0, min(y, orig_h - 1))
+    x2 = max(x + 1, min(x + w, orig_w))
+    y2 = max(y + 1, min(y + h, orig_h))
+
+    return img.crop((x, y, x2, y2))
+
+
+def apply_rotate(img: Image.Image, angle: float = 90) -> Image.Image:
+    """Rotate image by the given angle (degrees, counter-clockwise). Expands canvas to fit."""
+    angle = float(angle)
+    return img.rotate(angle, expand=True, resample=Image.BICUBIC)
+
+
+def compress_image(img: Image.Image, quality: int = 75) -> dict:
+    """Return save kwargs for JPEG compression. Used by the route layer."""
+    quality = max(1, min(100, int(quality)))
+    # Ensure JPEG-compatible mode
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
+    return img, {"format": "JPEG", "quality": quality, "optimize": True}
+
+
 def convert_format(img: Image.Image, target_format: str) -> Image.Image:
     """Prepare image for format conversion (handle mode compatibility)."""
     fmt = target_format.upper()
@@ -84,6 +159,8 @@ def convert_format(img: Image.Image, target_format: str) -> Image.Image:
         if img.mode in ("RGBA", "P"):
             img = img.convert("RGB")
     return img
+
+
 
 
 # Registry for easy lookup
@@ -96,6 +173,9 @@ OPERATIONS = {
     "grayscale": apply_grayscale,
     "sepia": apply_sepia,
     "invert": apply_invert,
+    "resize": apply_resize,
+    "crop": apply_crop,
+    "rotate": apply_rotate,
 }
 
 SUPPORTED_FORMATS = {"png", "jpg", "jpeg", "webp", "bmp", "tiff"}
