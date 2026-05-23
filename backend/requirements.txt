@@ -9,3 +9,5 @@ opencv-python-headless==4.11.0.86
 python-dotenv==1.1.0
 Werkzeug==3.1.3
 pytest==8.3.4
+prometheus-flask-exporter
+redis

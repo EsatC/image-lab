@@ -5,6 +5,7 @@ import os
 import logging
 
 from flask import Flask
+from prometheus_flask_exporter import PrometheusMetrics
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -23,6 +24,9 @@ def create_app(config_name: str | None = None) -> Flask:
         config_name = os.environ.get("FLASK_ENV", "default")
 
     app = Flask(__name__)
+
+    metrics = PrometheusMetrics(app)
+    metrics.info("imagelab_backend_info", "ImageLab backend metrics", version="1.0.0")
     app.config.from_object(config_by_name[config_name])
 
     # ---------- Extensions ----------
@@ -44,10 +48,12 @@ def create_app(config_name: str | None = None) -> Flask:
     from app.routes.auth import auth_bp
     from app.routes.images import images_bp
     from app.routes.processing import processing_bp
+    from app.routes.cache_demo import cache_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(images_bp, url_prefix="/api/images")
     app.register_blueprint(processing_bp, url_prefix="/api/images")
+    app.register_blueprint(cache_bp, url_prefix="/api")
 
     # ---------- Health check ----------
     @app.route("/api/health")
