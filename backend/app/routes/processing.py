@@ -9,7 +9,10 @@ from PIL import Image as PILImage
 
 from app import db
 from app.models import Image
-from app.services.image_processor import OPERATIONS, SUPPORTED_FORMATS, convert_format, compress_image
+from app.services.image_processor import (
+    OPERATIONS, SUPPORTED_FORMATS, convert_format, compress_image,
+    extract_exif, strip_metadata,
+)
 
 processing_bp = Blueprint("processing", __name__)
 
@@ -231,7 +234,6 @@ def get_metadata(image_id):
         return jsonify({"errors": ["Image not found."]}), 404
 
     try:
-        from app.services.image_processor import extract_exif
         with PILImage.open(image.storage_path) as img:
             metadata = extract_exif(img)
             
@@ -251,9 +253,11 @@ def remove_metadata(image_id):
         return jsonify({"errors": ["Image not found."]}), 404
 
     try:
-        from app.services.image_processor import strip_metadata
         with PILImage.open(image.storage_path) as img:
-            img = img.convert("RGB") if img.mode not in ("RGB", "L", "RGBA") else img
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+            elif img.mode not in ("RGB", "L"):
+                img = img.convert("RGB")
             clean_img = strip_metadata(img)
 
         upload_folder = current_app.config["UPLOAD_FOLDER"]
