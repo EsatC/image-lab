@@ -27,7 +27,13 @@ jobs:
         run: pip install -r backend/requirements.txt
 
       - name: Run backend tests
-        run: cd backend && python -m pytest tests/ -v --tb=short || true
+        run: |
+          cd backend
+          if [ -d tests ]; then
+            python -m pytest tests/ -v --tb=short
+          else
+            echo "No backend tests found, skipping backend tests."
+          fi
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -72,7 +78,7 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/frontend:latest
 
-  # ── Deploy to Oracle Cloud VM ────────────────────────
+  # ── Deploy to AWS EC2 ────────────────────────────────
   deploy:
     needs: docker
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -80,12 +86,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: Deploy to AWS EC2 via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.OCI_HOST }}
-          username: ${{ secrets.OCI_USER }}
-          key: ${{ secrets.OCI_SSH_KEY }}
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_SSH_KEY }}
           script: |
             cd ~/image-lab
             git pull origin main
