@@ -8,23 +8,60 @@ from PIL import Image, ImageFilter, ExifTags
 
 def extract_exif(img: Image.Image) -> dict:
     """Extract EXIF data and parse to a JSON-serializable dictionary."""
+    metadata = {}
     exif_data = img.getexif()
     if not exif_data:
         return {}
         
-    metadata = {}
+    # Merge IFD0
     for tag_id, value in exif_data.items():
         tag = ExifTags.TAGS.get(tag_id, tag_id)
-        # Avoid bytes/unserializable types
-        if isinstance(value, bytes):
-            try:
-                value = value.decode("utf-8", errors="replace")
-            except Exception:
-                value = str(value)
-        elif not isinstance(value, (int, float, str)):
-            value = str(value)
         metadata[str(tag)] = value
         
+    # ExifIFD
+    try:
+        exif_ifd = exif_data.get_ifd(0x8769)
+        for tag_id, value in exif_ifd.items():
+            tag = ExifTags.TAGS.get(tag_id, tag_id)
+            metadata[str(tag)] = value
+    except Exception:
+        pass
+
+    # GPSIFD
+    try:
+        gps_ifd = exif_data.get_ifd(0x8825)
+        for tag_id, value in gps_ifd.items():
+            tag = ExifTags.GPSTAGS.get(tag_id, tag_id)
+            metadata[f'GPS_{tag}'] = value
+    except Exception:
+        pass
+        
+    # Clean up values
+    for tag, value in metadata.items():
+        if isinstance(value, bytes):
+            try:
+                metadata[tag] = value.decode('utf-8', errors='replace').replace('\x00', '').strip()
+            except:
+                metadata[tag] = str(value)
+        elif hasattr(value, 'numerator'):
+            metadata[tag] = float(value)
+        elif isinstance(value, (tuple, list)):
+            clean_val = []
+            for item in value:
+                if isinstance(item, bytes):
+                    try:
+                        clean_item = item.decode('utf-8', errors='replace').replace('\x00', '').strip()
+                    except:
+                        clean_item = str(item)
+                    clean_val.append(clean_item)
+                elif hasattr(item, 'numerator'):
+                    clean_val.append(float(item))
+                else:
+                    clean_val.append(item)
+            metadata[tag] = clean_val
+        elif not isinstance(value, (int, float, str, list, tuple)):
+            metadata[tag] = str(value)
+            
     return metadata
 
 def strip_metadata(img: Image.Image) -> Image.Image:
