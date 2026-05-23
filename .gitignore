@@ -19,3 +19,13 @@ backend/instance/
 # IDE
 .vscode/
 .idea/
+
+.env
+
+*.zip
+
+backend/instance/
+
+uploads/
+
+__pycache__/
