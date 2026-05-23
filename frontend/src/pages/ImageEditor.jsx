@@ -145,7 +145,7 @@ export default function ImageEditor() {
       setMetadata(data.metadata || {});
       setShowMetadataModal(true);
     } catch (err) {
-      alert('Failed to read metadata.');
+      alert(err.response?.data?.errors?.[0] || 'Failed to read metadata.');
     }
   };
 
@@ -153,7 +153,7 @@ export default function ImageEditor() {
     setProcessing(true);
     setResult(null);
     try {
-      const { data } = await client.post(`/images/${id}/remove_metadata`);
+      const { data } = await client.post(`/images/${id}/remove_metadata`, {});
       setResult(data.image);
     } catch (err) {
       alert(err.response?.data?.errors?.[0] || 'Failed to remove metadata.');
