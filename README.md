@@ -101,4 +101,4 @@ image-lab/
 
 ## 📜 Lisans
 
-MIT
+
