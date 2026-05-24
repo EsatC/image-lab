@@ -791,7 +791,7 @@ docker system prune -af
 
 ---
 
-## 📜 License
+## License
 
 <!-- Add your license here -->
 MIT
