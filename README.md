@@ -1,4 +1,4 @@
-# 🖼️ ImageLab
+# ImageLab
 
 **Cloud-native, full-stack image processing platform built with 12-Factor App principles.**
 
@@ -6,7 +6,7 @@ ImageLab lets users upload, manage, and process images through a modern web inte
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
 1. [Overview](#-overview)
 2. [Features](#-features)
@@ -30,7 +30,7 @@ ImageLab lets users upload, manage, and process images through a modern web inte
 
 ---
 
-## 🔍 Overview
+## Overview
 
 ImageLab is organized into five main layers:
 
@@ -46,7 +46,7 @@ All services run as Docker containers orchestrated by Docker Compose and are dep
 
 ---
 
-## ✨ Features
+## Features
 
 - **Image Upload** — Drag & drop or file picker with multi-file upload support
 - **Image Processing** — Histogram equalization, noise reduction, blur, sharpen, edge detection, grayscale, sepia, color inversion, resize, crop, and rotate
@@ -63,7 +63,7 @@ All services run as Docker containers orchestrated by Docker Compose and are dep
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────┐         ┌──────────────────────────────────────────────────────┐
@@ -108,7 +108,7 @@ All services run as Docker containers orchestrated by Docker Compose and are dep
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -127,7 +127,7 @@ All services run as Docker containers orchestrated by Docker Compose and are dep
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 image-lab/
@@ -186,7 +186,7 @@ image-lab/
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
 Copy the example file and fill in your values:
 
@@ -229,7 +229,7 @@ VITE_API_URL=http://localhost:5000
 REDIS_URL=redis://redis:6379/0
 ```
 
-> ⚠️ **Never commit the `.env` file.** It is listed in `.gitignore`.
+> **Never commit the `.env` file.** It is listed in `.gitignore`.
 
 ---
 
@@ -283,7 +283,7 @@ REDIS_URL=redis://redis:6379/0
 
 ---
 
-## 💻 Local Development Setup
+## Local Development Setup
 
 ### Prerequisites
 
@@ -319,7 +319,7 @@ The frontend dev server will be available at `http://localhost:5173`.
 
 ---
 
-## 🐳 Running with Docker Compose
+## Running with Docker Compose
 
 ### Prerequisites
 
@@ -372,7 +372,7 @@ All 9 services should show as **running**:
 docker compose down
 ```
 
-To also remove volumes (⚠️ deletes all data):
+To also remove volumes (!!! deletes all data):
 
 ```bash
 docker compose down -v
@@ -380,7 +380,7 @@ docker compose down -v
 
 ---
 
-## ☁️ Production Deployment on AWS EC2
+## Production Deployment on AWS EC2
 
 ### Server Specifications
 
@@ -440,11 +440,11 @@ curl http://localhost/api/health
 | `9090` | TCP | Admin IP only | Prometheus dashboard |
 | `3000` | TCP | Admin IP only | Grafana dashboard |
 
-> ⚠️ **Do not expose ports 9090, 3000, or 3100 publicly.** Loki (port 3100) is already bound to `127.0.0.1` in `docker-compose.yml`.
+> **Do not expose ports 9090, 3000, or 3100 publicly.** Loki (port 3100) is already bound to `127.0.0.1` in `docker-compose.yml`.
 
 ---
 
-## 📊 Monitoring with Prometheus and Grafana
+## Monitoring with Prometheus and Grafana
 
 ### Prometheus
 
@@ -489,7 +489,7 @@ Use the **Explore** page in Grafana to run PromQL queries against Prometheus or 
 
 ---
 
-## 📝 Logging with Loki and Promtail
+## Logging with Loki and Promtail
 
 All containers follow the **12-Factor App** logging principle: application logs are emitted to `stdout`/`stderr` and are captured by Docker's logging driver.
 
@@ -539,7 +539,7 @@ curl http://localhost:3100/ready
 
 ---
 
-## ⚡ Caching with Redis
+## Caching with Redis
 
 Redis 7 (Alpine) runs as an internal service with **AOF persistence** enabled.
 
@@ -581,7 +581,7 @@ docker exec -it imagelab-redis redis-cli ping
 
 ---
 
-## 🔄 CI/CD with GitHub Actions
+## CI/CD with GitHub Actions
 
 The CI/CD pipeline is defined in `.github/workflows/deploy.yml` and runs on **push** and **pull request** events targeting the `main` branch.
 
@@ -633,7 +633,7 @@ docker image prune -f
 
 ---
 
-## ✅ 12-Factor App Compliance
+## 12-Factor App Compliance
 
 | Factor | Principle | Implementation |
 |---|---|---|
@@ -652,7 +652,7 @@ docker image prune -f
 
 ---
 
-## 🧰 Useful Commands
+## Useful Commands
 
 ### Docker Compose
 
@@ -678,7 +678,7 @@ docker compose restart backend
 # Stop all services
 docker compose down
 
-# Stop and remove volumes (⚠️ data loss)
+# Stop and remove volumes (data loss)
 docker compose down -v
 
 # Rebuild and restart without orphan containers
@@ -721,7 +721,7 @@ docker exec -it imagelab-backend python -c "from app import create_app, db; app 
 # Prune unused Docker images
 docker image prune -f
 
-# Prune unused volumes (⚠️ careful)
+# Prune unused volumes (careful)
 docker volume prune -f
 
 # Prune everything (stopped containers, unused networks, images, build cache)
@@ -730,7 +730,7 @@ docker system prune -af
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 | Issue | Solution |
 |---|---|
@@ -747,7 +747,7 @@ docker system prune -af
 
 ---
 
-## 🔒 Security Notes
+## Security Notes
 
 - **`.env` file must not be committed** to version control. It is listed in `.gitignore`.
 - **`SECRET_KEY` and `JWT_SECRET_KEY`** must be long, random strings in production. Generate with:
@@ -774,7 +774,7 @@ docker system prune -af
 
 ---
 
-## 🚀 Future Improvements
+## Future Improvements
 
 | Area | Improvement |
 |---|---|
@@ -794,3 +794,4 @@ docker system prune -af
 ## 📜 License
 
 <!-- Add your license here -->
+MIT
